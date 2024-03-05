@@ -46,15 +46,15 @@ B_n = 103
 #ringStreet = R_ring + B_ring
 #noRingStreet = R_n + B_n - ringStreet
 
-#данные на реддите
+#данные на реддите https://www.reddit.com/r/AskWomen/comments/xw4kp6/married_women_how_often_do_you_wear_your/
 ringReddit = 19 + 16
 noRingReddit = 9 + 5
 
-#данные stranamam
+#данные stranamam https://www.stranamam.ru/post/843327/#comments
 ringWomen = 198 + 6
 noRingWomen = 47 + 11
 
-#данные на хабре
+#данные на хабре https://habr.com/ru/articles/782456/
 ringHabr = 25 + 1 + 1
 noRingHabr = 47
 

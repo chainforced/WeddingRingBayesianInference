@@ -1,4 +1,5 @@
-:lang(RU) { color: red; }
+[![ru](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/chainforced/WeddingRingBayesianInference/README.RU.md) <br />
+
 I'm using here bayesian inference to find expected probabilities of 2 inductive arguments:<br />
  **P(not married | no ring) = 61%** <br />
  **P(married | ring) = 89%** <br />

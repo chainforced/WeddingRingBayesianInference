@@ -8,5 +8,5 @@ Prior distributions are such, that prior expectation of this probability is: <br
 **P(not married | no ring) = 96% ±11%** <br />
 Hence, my analysis falsifies the hypothesis, that this inductive argument is accurate.<br />
 
-Here's a little article of mine, describing what data I use and some basic logic of how it's connected to the probabilities I estimate
+Here's a little article of mine, describing what data I used and some basic logic of how it's connected to the probabilities I estimate
 https://medium.com/@chainforced/the-absence-of-a-wedding-ring-is-an-uninformative-sign-of-singleness-of-random-people-fbf1f924088f

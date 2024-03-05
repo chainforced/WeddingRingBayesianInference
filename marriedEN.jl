@@ -58,10 +58,14 @@ noRingHabr = 47
 
 avg1 = 0
 avg2 = 0
+std1 = 0
+std2 = 0
 avg = -Inf
 n = -Inf
 avg3 = -Inf
 n3 = -Inf
+std0=-Inf
+std3=-Inf
 #number of iterations for montecarlo simulation
 niter = 1e+6
 num=0
@@ -92,6 +96,8 @@ for i in (1:niter)
         p52 = p3 * p2 *(1-p9) + (1 - p3) * p1*(1-p10) #P(ring on left hand  | on the street)
         global avg1 += p4
         global avg2 +=p44
+        global std1 += p4*p4
+        global std2 +=p44*p44
 
         #loglikelihood of P(ring| on the streed) based on street data
         loglikelihood = log(p51) * R_ring + log(1 - p51) * (R_n - R_ring) 
@@ -107,13 +113,15 @@ for i in (1:niter)
         global n = logsum(n, loglikelihood)
         global avg = logsum(avg, loglikelihood + log(p4))
         global avg3 = logsum(avg3, loglikelihood + log(p44))
+        global std0 = logsum(std0, loglikelihood + log(p4)*2)
+        global std3 = logsum(std3, loglikelihood + log(p44)*2)
 
         global num+=1
     end
 end
 
-println("prior expectation: P(не женат | adult on the street without a wedding ring) = ", avg1 / num)
-println("posterior: P(не женат | adult on the street without a wedding ring) = ", exp(avg - n))
+println("prior expectation: P(не женат | adult on the street without a wedding ring) = ", avg1 / num," ± ", (std1/num - avg1*avg1/(num*num))^0.5 )
+println("posterior: P(не женат | adult on the street without a wedding ring) = ", exp(avg - n)," ± ", (exp(std0 - n) - exp(2*(avg - n)))^0.5)
 
-println("prior expectation: P(married | adult on the street with a wedding ring) = ", avg2 / num)
-println("posterior: P(married | adult on the street with  awedding ring) = ", exp(avg3 - n))
+println("prior expectation: P(married | adult on the street with a wedding ring) = ", avg2 / num," ± ",  (std2/num - avg2*avg2/(num*num))^0.5 )
+println("posterior: P(married | adult on the street with  awedding ring) = ", exp(avg3 - n)," ± ", (exp(std3 - n) - exp(2*(avg3 - n)))^0.5)

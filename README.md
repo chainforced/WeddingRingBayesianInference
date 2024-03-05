@@ -2,8 +2,8 @@
 
 
 I'm using here bayesian inference to find expected probabilities of 2 inductive arguments:<br />
- **P(not married | no ring) = 62%** <br />
- **P(married | ring) = 92%** <br />
+ **P(not married | no ring & my data) = 62%** <br />
+ **P(married | ring & my data) = 92%** <br />
 In other words, given the data I have, if one sees that a person has NO wedding ring, one should rationally expect that this person is NOT married with only 62% confidence level. <br />
 And if one sees that a person has wedding ring, one should rationally expect that this person is married with 92% confidence level.<br />
 Prior distributions are such, that prior expectations of these probabilities are: <br />

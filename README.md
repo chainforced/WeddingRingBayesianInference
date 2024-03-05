@@ -1,3 +1,4 @@
+:lang(RU) { color: red; }
 I'm using here bayesian inference to find expected probabilities of 2 inductive arguments:<br />
  **P(not married | no ring) = 61%** <br />
  **P(married | ring) = 89%** <br />

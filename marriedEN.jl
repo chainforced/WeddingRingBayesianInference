@@ -44,15 +44,15 @@ L_n = 258
 B_ring = 35
 B_n = 103
 
-#Reddit Data
+#Reddit Data https://www.reddit.com/r/AskWomen/comments/xw4kp6/married_women_how_often_do_you_wear_your/
 ringReddit = 19 + 16
 noRingReddit = 9 + 5
 
-#stranamam Data
+#stranamam Data https://www.stranamam.ru/post/843327/#comments
 ringWomen = 198 + 6
 noRingWomen = 47 + 11
 
-#habrahabr data
+#habrahabr data  https://habr.com/ru/articles/782456/
 ringHabr = 25 + 1 + 1
 noRingHabr = 47
 

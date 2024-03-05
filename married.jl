@@ -60,12 +60,16 @@ noRingHabr = 47
 
 avg1 = 0
 avg2 = 0
+std1 = 0
+std2 = 0
 avg = -Inf
 n = -Inf
 avg3 = -Inf
 n3 = -Inf
+std0=-Inf
+std3=-Inf
 #Количество итераций
-niter = 1e+6
+niter = 1e+7
 num=0
 #перебираем модели
 for i in (1:niter)
@@ -95,6 +99,8 @@ for i in (1:niter)
         p52 = p3 * p2 *(1-p9) + (1 - p3) * p1*(1-p10) #P(кольцо на левой  | на улице)
         global avg1 += p4
         global avg2 +=p44
+        global std1 += p4*p4
+        global std2 +=p44*p44
 
         #правдоподобность P(кольцо| на улице) исходя из наблюдений на улице
         loglikelihood = log(p51) * R_ring + log(1 - p51) * (R_n - R_ring) 
@@ -111,12 +117,16 @@ for i in (1:niter)
         global avg = logsum(avg, loglikelihood + log(p4))
         global avg3 = logsum(avg3, loglikelihood + log(p44))
 
+        global std0 = logsum(std0, loglikelihood + log(p4)*2)
+        global std3 = logsum(std3, loglikelihood + log(p44)*2)
+
         global num+=1
     end
 end
 
-println("изначально ожидали P(не женат | взрослый на улице без кольца) = ", avg1 / num)
-println("исходя из данных P(не женат | взрослый на улице без кольца) = ", exp(avg - n))
+#variance = E(x^2) - E(x)^2
+println("изначально ожидали P(не женат | взрослый на улице без кольца) = ", avg1 / num," ± ", (std1/num - avg1*avg1/(num*num))^0.5 )
+println("исходя из данных P(не женат | взрослый на улице без кольца) = ", exp(avg - n)," ± ", (exp(std0 - n) - exp(2*(avg - n)))^0.5)
 
-println("изначально ожидали P(женат | взрослый на улице с кольцом) = ", avg2 / num)
-println("исходя из данных P(женат | взрослый на улице с кольцом) = ", exp(avg3 - n))
+println("изначально ожидали P(женат | взрослый на улице с кольцом) = ", avg2 / num," ± ",  (std2/num - avg2*avg2/(num*num))^0.5 )
+println("исходя из данных P(женат | взрослый на улице с кольцом) = ", exp(avg3 - n)," ± ", (exp(std3 - n) - exp(2*(avg3 - n)))^0.5)

@@ -21,8 +21,8 @@ end
 
 
 #Априорные распределения
-prior1 = Beta(0.05, 1.95) #распределение для P(кольцо | не женат и на улице)
-prior2 = Beta(1.95, 0.05) #распределение для P(кольцо | женат и на улице)
+prior1 = Beta(0.1, 3.9) #распределение для P(кольцо | не женат и на улице)
+prior2 = Beta(3.9, 0.1) #распределение для P(кольцо | женат и на улице)
 println("изначально ожидаем P(кольцо | не женат)=", mean(prior1), " ± ", std(prior1))
 println("изначально ожидаем P(кольцо | женат)=", mean(prior2), " ± ", std(prior2))
 #ожидаем стандартную ошибку в 15 процентных пунктов у нерепрезентативного опроса https://adamobeng.com/download/FastCheapAccurate.pdf
@@ -32,7 +32,7 @@ println("ожидаем P(женат | взрослый на улице)=", mean
 
 prior4 = Beta(1.23, 0.04) #P(правая рука | обручальное кольцо) основываясь на https://www.stranamam.ru/post/843327/#comments
 println("ожидаем P(правая рука | обручальное кольцо)=", mean(prior4), " ± ", std(prior4))
-prior5 = Beta(1,1) #P(правая рука | не обручальное кольцо)
+prior5 = Beta(1, 1) #P(правая рука | не обручальное кольцо)
 println("ожидаем P(правая рука | не обручальное кольцо)=", mean(prior5), " ± ", std(prior5))
 
 
@@ -66,11 +66,11 @@ avg = -Inf
 n = -Inf
 avg3 = -Inf
 n3 = -Inf
-std0=-Inf
-std3=-Inf
+std0 = -Inf
+std3 = -Inf
 #Количество итераций
 niter = 1e+7
-num=0
+num = 0
 #перебираем модели
 for i in (1:niter)
     p1 = rand(prior1, 1)[1] #P(кольцо | на улице и не женат)
@@ -80,53 +80,52 @@ for i in (1:niter)
     p9 = rand(prior4, 1)[1] #P(правая | обручальное кольцо)
     p10 = rand(prior5, 1)[1] #P(правая | не обручальное кольцо)
 
-    if p1 > 0 && p1 < 1 && p2 > 0 && p2 < 1 && p3 > 0 && p3 < 1 && p9>0 && p9<1 && p10>0 && p10<1
 
-        #нерепрезентативные оценки P(кольцо | женат) с ste=0.15
-        BdivideA = (1.0 / p2) - 1.0 #beta/alpha for beta distribution
-        AplusB = p2 * p2 * BdivideA / (0.15 * 0.15) #beta+alpha for beta distribution
-        beta = AplusB * BdivideA / (BdivideA + 1)
-        alpha = AplusB - beta
-        prior6 = Beta(alpha, beta)
-        p6 = rand(prior6, 1)[1] #P(кольцо | женатый и на реддите)
-        p7 = rand(prior6, 1)[1] #P(кольцо | женатый и на хабре)
-        p8 = rand(prior6, 1)[1] #P(кольцо | женатый и на женском форуме)
+    #нерепрезентативные оценки P(кольцо | женат) с ste=0.15
+    BdivideA = (1.0 / minimum([p2, 0.99])) - 1.0 #beta/alpha for beta distribution
+    AplusB = p2 * p2 * BdivideA / (0.15 * 0.15) #beta+alpha for beta distribution
+    beta = AplusB * BdivideA / (BdivideA + 1)
+    alpha = AplusB - beta
+    prior6 = Beta(alpha, beta)
+    p6 = rand(prior6, 1)[1] #P(кольцо | женатый и на реддите)
+    p7 = rand(prior6, 1)[1] #P(кольцо | женатый и на хабре)
+    p8 = rand(prior6, 1)[1] #P(кольцо | женатый и на женском форуме)
 
-        p4 = (1 - p3) * (1 - p1) / ((1 - p3) * (1 - p1) + p3 * (1 - p2)) #P(не женат | взрослый на улице без кольца)
-        p44 = p3 * p2 / (p3*p2 + (1-p3)*p1) #P(женат | взрослый на улице c кольцом)
+    p4 = (1 - p3) * (1 - p1) / ((1 - p3) * (1 - p1) + p3 * (1 - p2)) #P(не женат | взрослый на улице без кольца)
+    p44 = p3 * p2 / (p3 * p2 + (1 - p3) * p1) #P(женат | взрослый на улице c кольцом)
 
-        p51 = p3 * p2 * p9 + (1 - p3) * p1 *p10  #P(кольцо на правой | на улице)
-        p52 = p3 * p2 *(1-p9) + (1 - p3) * p1*(1-p10) #P(кольцо на левой  | на улице)
-        global avg1 += p4
-        global avg2 +=p44
-        global std1 += p4*p4
-        global std2 +=p44*p44
+    p51 = p3 * p2 * p9 + (1 - p3) * p1 * p10  #P(кольцо на правой | на улице)
+    p52 = p3 * p2 * (1 - p9) + (1 - p3) * p1 * (1 - p10) #P(кольцо на левой  | на улице)
+    global avg1 += p4
+    global avg2 += p44
+    global std1 += p4 * p4
+    global std2 += p44 * p44
 
-        #правдоподобность P(кольцо| на улице) исходя из наблюдений на улице
-        loglikelihood = log(p51) * R_ring + log(1 - p51) * (R_n - R_ring) 
-        loglikelihood += log(p52) * L_ring + log(1 - p52) * (L_n - L_ring) 
-        loglikelihood += log(p51+p52) * R_ring + log(1 - p51 - p52) * (R_n - R_ring) 
-        
-        
-        loglikelihood += log(p6) * ringReddit + log(1 - p6) * noRingReddit #правдоподобность P(кольцо | женат) исходя из наблюдений на реддите
-        loglikelihood += log(p7) * ringHabr + log(1 - p7) * noRingHabr #правдоподобность P(кольцо | женат) исходя из наблюдений на хабре
-        loglikelihood += log(p8) * ringWomen + log(1 - p8) * noRingWomen #правдоподобность P(кольцо | женат) исходя из наблюдений на stranamam
+    #правдоподобность P(кольцо| на улице) исходя из наблюдений на улице
+    loglikelihood = log(p51) * R_ring + log(1 - p51) * (R_n - R_ring)
+    loglikelihood += log(p52) * L_ring + log(1 - p52) * (L_n - L_ring)
+    loglikelihood += log(p51 + p52) * R_ring + log(1 - p51 - p52) * (R_n - R_ring)
 
 
-        global n = logsum(n, loglikelihood)
-        global avg = logsum(avg, loglikelihood + log(p4))
-        global avg3 = logsum(avg3, loglikelihood + log(p44))
+    loglikelihood += log(p6) * ringReddit + log(1 - p6) * noRingReddit #правдоподобность P(кольцо | женат) исходя из наблюдений на реддите
+    loglikelihood += log(p7) * ringHabr + log(1 - p7) * noRingHabr #правдоподобность P(кольцо | женат) исходя из наблюдений на хабре
+    loglikelihood += log(p8) * ringWomen + log(1 - p8) * noRingWomen #правдоподобность P(кольцо | женат) исходя из наблюдений на stranamam
 
-        global std0 = logsum(std0, loglikelihood + log(p4)*2)
-        global std3 = logsum(std3, loglikelihood + log(p44)*2)
 
-        global num+=1
-    end
+    global n = logsum(n, loglikelihood)
+    global avg = logsum(avg, loglikelihood + log(p4))
+    global avg3 = logsum(avg3, loglikelihood + log(p44))
+
+    global std0 = logsum(std0, loglikelihood + log(p4) * 2)
+    global std3 = logsum(std3, loglikelihood + log(p44) * 2)
+
+    global num += 1
+
 end
 
 #variance = E(x^2) - E(x)^2
-println("изначально ожидали P(не женат | взрослый на улице без кольца) = ", avg1 / num," ± ", (std1/num - avg1*avg1/(num*num))^0.5 )
-println("исходя из данных P(не женат | взрослый на улице без кольца) = ", exp(avg - n)," ± ", (exp(std0 - n) - exp(2*(avg - n)))^0.5)
+println("изначально ожидали P(не женат | взрослый на улице без кольца) = ", avg1 / num, " ± ", (std1 / num - avg1 * avg1 / (num * num))^0.5)
+println("исходя из данных P(не женат | взрослый на улице без кольца) = ", exp(avg - n), " ± ", (exp(std0 - n) - exp(2 * (avg - n)))^0.5)
 
-println("изначально ожидали P(женат | взрослый на улице с кольцом) = ", avg2 / num," ± ",  (std2/num - avg2*avg2/(num*num))^0.5 )
-println("исходя из данных P(женат | взрослый на улице с кольцом) = ", exp(avg3 - n)," ± ", (exp(std3 - n) - exp(2*(avg3 - n)))^0.5)
+println("изначально ожидали P(женат | взрослый на улице с кольцом) = ", avg2 / num, " ± ", (std2 / num - avg2 * avg2 / (num * num))^0.5)
+println("исходя из данных P(женат | взрослый на улице с кольцом) = ", exp(avg3 - n), " ± ", (exp(std3 - n) - exp(2 * (avg3 - n)))^0.5)
